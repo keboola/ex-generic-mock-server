@@ -1,0 +1,13 @@
+mock-server:
+  path: /{items}
+  defaults:
+    _controller: AppBundle:Api:index
+  requirements:
+    items: ".*"
+  defaults:
+    items: null
+
+homepage:
+  path: /
+  defaults:
+    _controller: AppBundle:Default:index
