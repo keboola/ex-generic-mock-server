@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  mock-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: keboola/mock-server
+    tty: true
+    stdin_open: true
+    ports:
+      - 8888:80/tcp
+    volumes:
+        - .:/code/
