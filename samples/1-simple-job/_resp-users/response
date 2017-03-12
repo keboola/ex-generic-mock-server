@@ -2,15 +2,11 @@
     {
         "id": 123,
         "name": "John Doe",
-        "married": {
-            "some": true
-        }
+        "married": true        
     },
     {
         "id": 234,
         "name": "Jane Doe",
-        "married": {
-            "some": false
-        }
+        "married": false
     }
 ]
