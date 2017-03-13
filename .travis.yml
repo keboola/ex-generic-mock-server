@@ -5,9 +5,9 @@ services:
 before_script:
   - docker-compose build ex-generic-mock-server
 script: 
-  - docker-compose run --rm --entrypoint sh ex-generic-mock-server /code/vendor/bin/phpcs --standard=psr2 -n /code/src/
-  - docker-compose run --rm --entrypoint sh ex-generic-mock-server /code/vendor/bin/phpcs --standard=psr2 -n /code/Tests/
-  - docker-compose run --rm --entrypoint sh ex-generic-mock-server /code/vendor/bin/phpunit
+  - docker-compose run --rm --entrypoint sh ex-generic-mock-server /appcode/vendor/bin/phpcs --standard=psr2 -n /appcode/src/
+  - docker-compose run --rm --entrypoint sh ex-generic-mock-server /appcode/vendor/bin/phpcs --standard=psr2 -n /appcode/Tests/
+  - docker-compose run --rm --entrypoint sh ex-generic-mock-server /appcode/vendor/bin/phpunit
 after_success:
   - docker images
 deploy:
