@@ -40,7 +40,6 @@ monolog:
             ident: "mock-server"
             type: stream
             level: debug
-            #path: C:\\Temp\\Lg\\symfony.log
-            path: /code/symfony.log
+            path: /code/var/logs/symfony.log
             channels: ["!doctrine"]
             bubble: false

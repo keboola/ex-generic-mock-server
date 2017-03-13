@@ -17,4 +17,5 @@ WORKDIR /code/
 
 COPY . /code/
 COPY ./000-default.conf /etc/apache2/sites-enabled/
-RUN composer install --no-interaction
+RUN composer install --no-interaction \
+	&& chmod -R a+rwx /code/var/
