@@ -1,11 +1,11 @@
 version: '2'
 
 services:
-  mock-server:
+  ex-generic-mock-server:
     build:
       context: .
       dockerfile: Dockerfile
-    image: keboola/mock-server
+    image: keboola/ex-generic-mock-server
     tty: true
     stdin_open: true
     ports:

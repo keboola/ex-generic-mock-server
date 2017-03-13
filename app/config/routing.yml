@@ -2,7 +2,6 @@ mock-server:
   path: /{items}
   defaults:
     _controller: AppBundle:Api:index
+    items: null
   requirements:
     items: ".*"
-  defaults:
-    items: null
