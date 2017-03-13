@@ -13,8 +13,8 @@ RUN cd /root/ \
   	&& ln -s /root/composer.phar /usr/local/bin/composer \
 	&& a2enmod rewrite
 
-WORKDIR /appcode/
+WORKDIR /code/
 
-COPY . /appcode/
+COPY . /code/
 COPY ./000-default.conf /etc/apache2/sites-enabled/
 RUN composer install --no-interaction

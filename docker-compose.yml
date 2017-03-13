@@ -10,5 +10,3 @@ services:
     stdin_open: true
     ports:
       - 8888:80/tcp
-    volumes:
-        - .:/code/
