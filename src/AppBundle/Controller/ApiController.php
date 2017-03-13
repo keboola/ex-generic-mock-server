@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use Monolog\Handler\StreamHandler;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -21,47 +22,44 @@ class ApiController extends Controller
     {
         $this->logger = $this->container->get('logger');
         $stream = fopen('php://stderr', 'r');
-        $this->logger->pushHandler(new \Monolog\Handler\StreamHandler($stream));
+        $this->logger->pushHandler(new StreamHandler($stream));
     }
 
     private function getBaseDirectory()
     {
-        if (getenv('KBC_SAMPLES_DIR')) {
-            $directory = getenv('KBC_SAMPLES_DIR');
+        if (getenv('KBC_EXAMPLES_DIR')) {
+            $directory = getenv('KBC_EXAMPLES_DIR');
         } else {
             $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
-                DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'samples';
+                DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'examples';
         }
         return $directory;
     }
 
     private function loadData()
     {
-        $requests = [];
         $finder = new Finder();
-        $finder->depth(2);
-        $finder->files()->name('/^(request|response)$/');
+        $finder->depth('> 0');
+        $finder->files()->name('*.request');
         /** @var SplFileInfo $file */
-        $requests[] = [];
+        $requests = [];
+        $requestIndex = [];
         foreach ($finder->in($this->getBaseDirectory()) as $file) {
-            $request = null;
-            $response = null;
-            $fragments = explode(DIRECTORY_SEPARATOR, $file->getRelativePath());
-            $requestId = $fragments[count($fragments) - 2] . '-' . $fragments[count($fragments) - 1];
-            if ($file->getFilename() == 'request') {
-                $request = file_get_contents($file->getPathname());
-                if (isset($requests[$request])) {
-                    throw new InvalidArgumentException(
-                        "Multiple instances of request $request, conflicting instances: " .
-                        $requests[$request] . " and " . $requestId
-                    );
-                }
-                $requests[$requestId]['request'] = $request;
-                $requests[$request] = $requestId;
-            } elseif ($file->getFilename() == 'response') {
-                $requests[$requestId]['response'] = file_get_contents($file->getPathname());
+            $baseName = $file->getBasename('.request');
+            $requestFile = $file->getPath() . DIRECTORY_SEPARATOR . $baseName . '.request';
+            $responseFile = $file->getPath() . DIRECTORY_SEPARATOR . $baseName . '.response';
+            $requestId = strtr($file->getRelativePath(), '/\\', '--');
+            $requestData = file_get_contents($requestFile);
+            if (isset($requestIndex[$requestData])) {
+                throw new InvalidArgumentException(
+                    "Multiple instances of request $requestData, conflicting instances: " .
+                    $requestIndex[$requestData] . " and " . $requestId
+                );
             }
-            $requests[$requestId]['test'] = $fragments[count($fragments) - 2];
+            $requests[$requestId]['request'] = $requestData;
+            $requests[$requestId]['response'] = file_get_contents($responseFile);
+            $requests[$requestId]['example'] = $baseName;
+            $requestIndex[$requestData] = $requestId;
         }
         return $requests;
     }
@@ -86,11 +84,12 @@ class ApiController extends Controller
                 }
             }
             $response = new Response();
-            $response->setContent("Unknown request $requestId");
+            $response->setStatusCode(404);
+            $response->setContent(json_encode(["message" => "Unknown request $requestId"]));
             return $response;
         } catch (\Exception $e) {
             $response = new Response();
-            $response->setContent("Error " . $e->getMessage());
+            $response->setContent(json_encode(["message" => "Error " . $e->getMessage()]));
             $response->setStatusCode(503);
             return $response;
         }

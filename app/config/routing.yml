@@ -6,8 +6,3 @@ mock-server:
     items: ".*"
   defaults:
     items: null
-
-homepage:
-  path: /
-  defaults:
-    _controller: AppBundle:Default:index
