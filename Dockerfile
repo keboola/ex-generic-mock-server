@@ -11,11 +11,12 @@ RUN apt-get update \
 RUN cd /root/ \
   	&& curl -sS https://getcomposer.org/installer | php \
   	&& ln -s /root/composer.phar /usr/local/bin/composer \
-	&& a2enmod rewrite
+	&& a2enmod rewrite \
+	&& a2dissite 000-default
 
 WORKDIR /code/
 
 COPY . /code/
-COPY ./000-default.conf /etc/apache2/sites-enabled/
+COPY ./site.conf /etc/apache2/sites-enabled/
 RUN composer install --no-interaction \
 	&& chmod -R a+rwx /code/var/
