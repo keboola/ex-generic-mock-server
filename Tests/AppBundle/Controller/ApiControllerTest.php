@@ -35,7 +35,7 @@ class ApiControllerTest extends WebTestCase
             [
                 'message' =>
                     'Error Multiple instances of request GET /test-url, ' .
-                    'conflicting instances: data-01-example and data-02-example'
+                    'conflicting instances: data-01-example-call1 and data-02-example-call1'
             ],
             json_decode($client->getResponse()->getContent(), true)
         );
