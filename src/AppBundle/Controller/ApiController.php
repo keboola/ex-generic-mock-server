@@ -48,7 +48,7 @@ class ApiController extends Controller
             $baseName = $file->getBasename('.request');
             $requestFile = $file->getPath() . DIRECTORY_SEPARATOR . $baseName . '.request';
             $responseFile = $file->getPath() . DIRECTORY_SEPARATOR . $baseName . '.response';
-            $requestId = strtr($file->getRelativePath(), '/\\', '--');
+            $requestId = strtr($file->getRelativePath(), '/\\', '--') . $baseName;
             $requestData = file_get_contents($requestFile);
             if (isset($requestIndex[$requestData])) {
                 throw new InvalidArgumentException(
