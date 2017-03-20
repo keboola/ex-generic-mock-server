@@ -40,4 +40,24 @@ class ApiControllerTest extends WebTestCase
             json_decode($client->getResponse()->getContent(), true)
         );
     }
+
+    public function testPostWithBody()
+    {
+        $client = static::createClient();
+        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . 'data-post' . DIRECTORY_SEPARATOR;
+        putenv('KBC_EXAMPLES_DIR=' . $examplesDir);
+        $client->request('POST', '/test-post', [], [], [], json_encode(["thisIs" => "correct"]));
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertEquals(['message' => 'ok'], json_decode($client->getResponse()->getContent(), true));
+        $client->request('POST', '/test-post', [], [], [], json_encode(["thisIs" => "incorrect"]));
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertEquals(['message' => 'error'], json_decode($client->getResponse()->getContent(), true));
+        $client->request('POST', '/test-post', [], [], [], json_encode(["something" => "else"]));
+        self::assertEquals(404, $client->getResponse()->getStatusCode());
+        self::assertEquals(
+            ['message' => "Unknown request POST /test-post\r\n\r\n{\"something\":\"else\"}"],
+            json_decode($client->getResponse()->getContent(), true)
+        );
+    }
 }

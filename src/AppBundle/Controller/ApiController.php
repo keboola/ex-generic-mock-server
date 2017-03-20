@@ -70,7 +70,7 @@ class ApiController extends Controller
             $this->init();
             $this->logger->info("Triggered index action");
             $uri = substr($request->getRequestUri(), strlen($request->getBaseUrl()));
-            $requestId = $request->getMethod() . ' ' . $uri;
+            $requestId = $request->getMethod() . ' ' . $uri . "\r\n\r\n" . $request->getContent();
             $samples = $this->loadData();
             $this->logger->info("Loaded " . count($samples) . "samples.");
             foreach ($samples as $sampleId => $sample) {
