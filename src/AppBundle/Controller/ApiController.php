@@ -80,7 +80,8 @@ class ApiController extends Controller
                     $response->setContent($sample['response']);
                     return $response;
                 } else {
-                    $this->logger->info("Request $requestId does not match sample $sampleId " . $sample['request']);
+                    $this->logger->info("Request " . var_export($requestId, true) .
+                        " does not match sample $sampleId " . var_export($sample['request'], true));
                 }
             }
             $response = new Response();
