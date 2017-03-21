@@ -104,8 +104,16 @@ class ApiController extends Controller
                     }
                     if ($valid) {
                         $response = new Response();
-                        $response->headers->add(['Content-type' => 'application/json']);
                         $response->setContent($sample['response']);
+                        if ($sample['responseHeaders']) {
+                            foreach ($sample['responseHeaders'] as $header) {
+                                $name = strtolower(trim(substr($header, 0, strpos($header, ':'))));
+                                $value = trim(substr($header, strpos($header, ':') + 1));
+                                $response->headers->add([$name => $value]);
+                            }
+                        } else {
+                            $response->headers->add(['Content-type' => 'application/json']);
+                        }
                         return $response;
                     }
                 } else {

@@ -77,6 +77,8 @@ class ApiControllerTest extends WebTestCase
         ]);
         self::assertEquals(200, $client->getResponse()->getStatusCode());
         self::assertEquals(['message' => 'ok'], json_decode($client->getResponse()->getContent(), true));
+        self::assertEquals('application/json', $client->getResponse()->headers->get('Content-Type'));
+        self::assertEquals('1234567890', $client->getResponse()->headers->get('ETag'));
 
         $client->request('GET', '/test-headers-catch', [], [], [
             'HTTP_Content-type' => 'something stupid'
@@ -104,6 +106,8 @@ class ApiControllerTest extends WebTestCase
         ]);
         self::assertEquals(200, $client->getResponse()->getStatusCode());
         self::assertEquals(['message' => 'ok'], json_decode($client->getResponse()->getContent(), true));
+        self::assertEquals('application/json', $client->getResponse()->headers->get('Content-Type'));
+        self::assertEquals('1234567890', $client->getResponse()->headers->get('ETag'));
         $client->request('GET', '/test-headers-no-catch', [], [], [
             'HTTP_Content-type' => 'something stupid'
         ]);
