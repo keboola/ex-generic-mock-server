@@ -51,6 +51,7 @@ class ApiController extends Controller
             $responseFile = $file->getPath() . DIRECTORY_SEPARATOR . $baseName . '.response';
             $requestHeaderFile = $requestFile . 'headers';
             $responseHeaderFile = $responseFile . 'headers';
+            $responseCodeFile = $responseFile . 'code';
             $requestId = strtr($file->getRelativePath(), '/\\', '--') . '-'. $baseName;
             $requestHeaders = '';
             if (file_exists($requestHeaderFile)) {
@@ -59,6 +60,10 @@ class ApiController extends Controller
             $responseHeaders = '';
             if (file_exists($responseHeaderFile)) {
                 $responseHeaders = file_get_contents($responseHeaderFile);
+            }
+            $responseCode = '';
+            if (file_exists($responseCodeFile)) {
+                $responseCode = file_get_contents($responseCodeFile);
             }
             $requestData = file_get_contents($requestFile);
             $newRequestId = $requestData . $requestHeaders;
@@ -72,6 +77,7 @@ class ApiController extends Controller
             $requests[$requestId]['response'] = file_get_contents($responseFile);
             $requests[$requestId]['requestHeaders'] = $requestHeaders ? explode("\n", $requestHeaders) : [];
             $requests[$requestId]['responseHeaders'] = $responseHeaders ? explode("\n", $responseHeaders) : [];
+            $requests[$requestId]['responseCode'] = $responseCode ?: null;
             $requests[$requestId]['example'] = $baseName;
             $requestIndex[$newRequestId] = $requestId;
         }
@@ -105,6 +111,11 @@ class ApiController extends Controller
                     if ($valid) {
                         $response = new Response();
                         $response->setContent($sample['response']);
+                        if ($sample['responseCode']) {
+                            $response->setStatusCode($sample['responseCode']);
+                        } else {
+                            $response->setStatusCode(200);
+                        }
                         if ($sample['responseHeaders']) {
                             foreach ($sample['responseHeaders'] as $header) {
                                 $name = strtolower(trim(substr($header, 0, strpos($header, ':'))));
@@ -128,7 +139,7 @@ class ApiController extends Controller
         } catch (\Exception $e) {
             $response = new Response();
             $response->setContent(json_encode(["message" => "Error " . $e->getMessage()]));
-            $response->setStatusCode(503);
+            $response->setStatusCode(500);
             return $response;
         }
     }

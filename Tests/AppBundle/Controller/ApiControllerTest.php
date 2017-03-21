@@ -30,7 +30,7 @@ class ApiControllerTest extends WebTestCase
             DIRECTORY_SEPARATOR . 'data-invalid' . DIRECTORY_SEPARATOR;
         putenv('KBC_EXAMPLES_DIR=' . $examplesDir);
         $client->request('GET', '/test-url');
-        self::assertEquals(503, $client->getResponse()->getStatusCode());
+        self::assertEquals(500, $client->getResponse()->getStatusCode());
         self::assertEquals(
             [
                 'message' =>
@@ -116,5 +116,17 @@ class ApiControllerTest extends WebTestCase
             ['message' => "Unknown request GET /test-headers-no-catch"],
             json_decode($client->getResponse()->getContent(), true)
         );
+    }
+
+    public function testCode()
+    {
+        $client = static::createClient();
+        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . 'data-code' . DIRECTORY_SEPARATOR;
+        putenv('KBC_EXAMPLES_DIR=' . $examplesDir);
+
+        $client->request('GET', '/test-code');
+        self::assertEquals(202, $client->getResponse()->getStatusCode());
+        self::assertEquals(['message' => 'ok'], json_decode($client->getResponse()->getContent(), true));
     }
 }
