@@ -40,6 +40,7 @@ class ApiController extends Controller
     {
         $finder = new Finder();
         $finder->depth('> 0');
+        $finder->sortByName();
         $finder->files()->name('*.request');
         /** @var SplFileInfo $file */
         $requests = [];
