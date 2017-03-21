@@ -48,18 +48,31 @@ class ApiController extends Controller
             $baseName = $file->getBasename('.request');
             $requestFile = $file->getPath() . DIRECTORY_SEPARATOR . $baseName . '.request';
             $responseFile = $file->getPath() . DIRECTORY_SEPARATOR . $baseName . '.response';
+            $requestHeaderFile = $requestFile . 'headers';
+            $responseHeaderFile = $responseFile . 'headers';
             $requestId = strtr($file->getRelativePath(), '/\\', '--') . '-'. $baseName;
+            $requestHeaders = '';
+            if (file_exists($requestHeaderFile)) {
+                $requestHeaders = file_get_contents($requestHeaderFile);
+            }
+            $responseHeaders = '';
+            if (file_exists($responseHeaderFile)) {
+                $responseHeaders = file_get_contents($responseHeaderFile);
+            }
             $requestData = file_get_contents($requestFile);
-            if (isset($requestIndex[$requestData])) {
+            $newRequestId = $requestData . $requestHeaders;
+            if (isset($requestIndex[$newRequestId])) {
                 throw new InvalidArgumentException(
-                    "Multiple instances of request $requestData, conflicting instances: " .
-                    $requestIndex[$requestData] . " and " . $requestId
+                    "Multiple instances of request $newRequestId, conflicting instances: " .
+                    $requestIndex[$newRequestId] . " and " . $requestId
                 );
             }
             $requests[$requestId]['request'] = $requestData;
             $requests[$requestId]['response'] = file_get_contents($responseFile);
+            $requests[$requestId]['requestHeaders'] = $requestHeaders ? explode("\n", $requestHeaders) : [];
+            $requests[$requestId]['responseHeaders'] = $responseHeaders ? explode("\n", $responseHeaders) : [];
             $requests[$requestId]['example'] = $baseName;
-            $requestIndex[$requestData] = $requestId;
+            $requestIndex[$newRequestId] = $requestId;
         }
         return $requests;
     }
@@ -71,14 +84,29 @@ class ApiController extends Controller
             $this->logger->info("Triggered index action");
             $uri = substr($request->getRequestUri(), strlen($request->getBaseUrl()));
             $requestId = trim($request->getMethod() . ' ' . $uri . "\r\n\r\n" . $request->getContent());
+            $headers = $request->headers->all();
             $samples = $this->loadData();
             $this->logger->info("Loaded " . count($samples) . "samples.");
             foreach ($samples as $sampleId => $sample) {
                 if ($sample['request'] == $requestId) {
-                    $response = new Response();
-                    $response->headers->add(['Content-type' => 'application/json']);
-                    $response->setContent($sample['response']);
-                    return $response;
+                    $valid = true;
+                    foreach ($sample['requestHeaders'] as $header) {
+                        $name = strtolower(trim(substr($header, 0, strpos($header, ':'))));
+                        $value = trim(substr($header, strpos($header, ':') + 1));
+                        if (!isset($headers[$name]) || $headers[$name][0] != $value) {
+                            $this->logger->info("Request headers " . var_export($headers, true) .
+                                " do not match sample $sampleId headers " .
+                                var_export($sample['requestHeaders'], true));
+                            $valid = false;
+                            break;
+                        }
+                    }
+                    if ($valid) {
+                        $response = new Response();
+                        $response->headers->add(['Content-type' => 'application/json']);
+                        $response->setContent($sample['response']);
+                        return $response;
+                    }
                 } else {
                     $this->logger->info("Request " . var_export($requestId, true) .
                         " does not match sample $sampleId " . var_export($sample['request'], true));

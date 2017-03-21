@@ -60,4 +60,57 @@ class ApiControllerTest extends WebTestCase
             json_decode($client->getResponse()->getContent(), true)
         );
     }
+
+    public function testHeadersCatch()
+    {
+        $client = static::createClient();
+        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . 'data-headers-catch' . DIRECTORY_SEPARATOR;
+        putenv('KBC_EXAMPLES_DIR=' . $examplesDir);
+
+        $client->request('GET', '/test-headers-catch');
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertEquals(['message' => 'error'], json_decode($client->getResponse()->getContent(), true));
+
+        $client->request('GET', '/test-headers-catch', [], [], [
+            'HTTP_Content-type' => 'application/json'
+        ]);
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertEquals(['message' => 'ok'], json_decode($client->getResponse()->getContent(), true));
+
+        $client->request('GET', '/test-headers-catch', [], [], [
+            'HTTP_Content-type' => 'something stupid'
+        ]);
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertEquals(['message' => 'error'], json_decode($client->getResponse()->getContent(), true));
+    }
+
+    public function testHeadersNoCatch()
+    {
+        $client = static::createClient();
+        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . 'data-headers-no-catch' . DIRECTORY_SEPARATOR;
+        putenv('KBC_EXAMPLES_DIR=' . $examplesDir);
+
+        $client->request('GET', '/test-headers-no-catch');
+        self::assertEquals(404, $client->getResponse()->getStatusCode());
+        self::assertEquals(
+            ['message' => "Unknown request GET /test-headers-no-catch"],
+            json_decode($client->getResponse()->getContent(), true)
+        );
+
+        $client->request('GET', '/test-headers-no-catch', [], [], [
+            'HTTP_Content-type' => 'application/json'
+        ]);
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertEquals(['message' => 'ok'], json_decode($client->getResponse()->getContent(), true));
+        $client->request('GET', '/test-headers-no-catch', [], [], [
+            'HTTP_Content-type' => 'something stupid'
+        ]);
+        self::assertEquals(404, $client->getResponse()->getStatusCode());
+        self::assertEquals(
+            ['message' => "Unknown request GET /test-headers-no-catch"],
+            json_decode($client->getResponse()->getContent(), true)
+        );
+    }
 }
