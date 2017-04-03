@@ -10,3 +10,7 @@ services:
     stdin_open: true
     ports:
       - 8888:80/tcp
+    volumes:
+      - ./data/:/apidata/
+    environment:
+      - KBC_EXAMPLES_DIR=/apidata/
