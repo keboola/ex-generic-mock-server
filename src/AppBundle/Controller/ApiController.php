@@ -49,9 +49,9 @@ class ApiController extends Controller
             $baseName = $file->getBasename('.request');
             $requestFile = $file->getPath() . DIRECTORY_SEPARATOR . $baseName . '.request';
             $responseFile = $file->getPath() . DIRECTORY_SEPARATOR . $baseName . '.response';
-            $requestHeaderFile = $requestFile . 'headers';
-            $responseHeaderFile = $responseFile . 'headers';
-            $responseCodeFile = $responseFile . 'code';
+            $requestHeaderFile = $requestFile . 'Headers';
+            $responseHeaderFile = $responseFile . 'Headers';
+            $responseCodeFile = $responseFile . 'Code';
             $requestId = strtr($file->getRelativePath(), '/\\', '--') . '-'. $baseName;
             $requestHeaders = '';
             if (file_exists($requestHeaderFile)) {
