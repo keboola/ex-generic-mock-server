@@ -55,7 +55,7 @@ POST /foo/bar?baz=bar&foo=bar
 
 Matching of the requests is done exactly and stupidly. That is `POST /foo/bar?baz=bar&foo=bar` matches only POST to `/foo/bar?baz=bar&foo=bar`. 
 It won't match on `/foo/bar/?baz=bar&foo=bar` or `/foo/bar?foo=bar&baz=bar`. You need to create separate `.request` and `.response` files 
-if you need this.
+if you need this. Also the URL must be urlencoded, therefore use `foo%5B0%5D=bar&foo%5B1%5D=baz` instead of `foo[0]=bar&foo[1]=baz`.
 
 #### Headers
 You can create a `.requestHeaders` file. The file contains HTTP headers, each on a single line (line delimiter is again CRLF), for example:

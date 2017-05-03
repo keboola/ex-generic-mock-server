@@ -31,7 +31,7 @@ class ApiController extends Controller
             $directory = getenv('KBC_EXAMPLES_DIR');
         } else {
             $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
-                DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'examples';
+                DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data';
         }
         return $directory;
     }
@@ -70,7 +70,8 @@ class ApiController extends Controller
             if (isset($requestIndex[$newRequestId])) {
                 throw new InvalidArgumentException(
                     "Multiple instances of request $newRequestId, conflicting instances: " .
-                    $requestIndex[$newRequestId] . " and " . $requestId
+                    $requestIndex[$newRequestId] . " (id: " . $newRequestId . " and " . $requestId .
+                    "(" . $requestData . ' Headers:' . $requestHeaders . ")"
                 );
             }
             $requests[$requestId]['request'] = $requestData;
@@ -99,6 +100,9 @@ class ApiController extends Controller
                     $valid = true;
                     foreach ($sample['requestHeaders'] as $header) {
                         $name = strtolower(trim(substr($header, 0, strpos($header, ':'))));
+                        if ($name == '') { // skip empty header
+                            continue;
+                        }
                         $value = trim(substr($header, strpos($header, ':') + 1));
                         if (!isset($headers[$name]) || $headers[$name][0] != $value) {
                             $this->logger->info("Request headers " . var_export($headers, true) .
