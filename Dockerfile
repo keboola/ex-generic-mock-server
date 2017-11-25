@@ -18,6 +18,6 @@ WORKDIR /code/
 
 COPY . /code/
 COPY ./site.conf /etc/apache2/sites-available/site.conf
-RUN a2ensite site.conf \
+RUN a2ensite site \
 	&& composer install --no-interaction \
 	&& chmod -R a+rwx /code/var/
