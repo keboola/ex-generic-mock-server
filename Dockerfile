@@ -17,6 +17,7 @@ RUN cd /root/ \
 WORKDIR /code/
 
 COPY . /code/
-COPY ./site.conf /etc/apache2/sites-enabled/
-RUN composer install --no-interaction \
+COPY ./site.conf /etc/apache2/sites-available/site.conf
+RUN a2ensite site.conf \
+	&& composer install --no-interaction \
 	&& chmod -R a+rwx /code/var/
