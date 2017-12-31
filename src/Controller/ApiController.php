@@ -1,8 +1,7 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace App\Controller;
 
-use Monolog\Handler\StreamHandler;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -13,18 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ApiController extends Controller
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    private function init()
-    {
-        $this->logger = $this->container->get('logger');
-        $stream = fopen('php://stderr', 'r');
-        $this->logger->pushHandler(new StreamHandler($stream));
-    }
-
     private function getBaseDirectory()
     {
         if (getenv('KBC_EXAMPLES_DIR')) {
@@ -75,7 +62,7 @@ class ApiController extends Controller
                 );
             }
             $requests[$requestId]['request'] = $requestData;
-            $requests[$requestId]['response'] = file_get_contents($responseFile);
+            $requests[$requestId]['response'] = $responseFile;
             $requests[$requestId]['requestHeaders'] = $requestHeaders ? explode("\n", $requestHeaders) : [];
             $requests[$requestId]['responseHeaders'] = $responseHeaders ? explode("\n", $responseHeaders) : [];
             $requests[$requestId]['responseCode'] = $responseCode ?: null;
@@ -85,16 +72,14 @@ class ApiController extends Controller
         return $requests;
     }
 
-    public function indexAction(Request $request)
+    public function index(Request $request, LoggerInterface $logger)
     {
         try {
-            $this->init();
-            $this->logger->info("Triggered index action");
             $uri = substr($request->getRequestUri(), strlen($request->getBaseUrl()));
             $requestId = trim($request->getMethod() . ' ' . $uri . "\r\n\r\n" . $request->getContent());
             $headers = $request->headers->all();
             $samples = $this->loadData();
-            $this->logger->info("Loaded " . count($samples) . "samples.");
+            $logger->info("Loaded " . count($samples) . "samples.");
             foreach ($samples as $sampleId => $sample) {
                 if ($sample['request'] == $requestId) {
                     $valid = true;
@@ -105,7 +90,7 @@ class ApiController extends Controller
                         }
                         $value = trim(substr($header, strpos($header, ':') + 1));
                         if (!isset($headers[$name]) || $headers[$name][0] != $value) {
-                            $this->logger->info("Request headers " . var_export($headers, true) .
+                            $logger->info("Request headers " . var_export($headers, true) .
                                 " do not match sample $sampleId headers " .
                                 var_export($sample['requestHeaders'], true));
                             $valid = false;
@@ -114,7 +99,7 @@ class ApiController extends Controller
                     }
                     if ($valid) {
                         $response = new Response();
-                        $response->setContent($sample['response']);
+                        $response->setContent(file_get_contents($sample['response']));
                         if ($sample['responseCode']) {
                             $response->setStatusCode($sample['responseCode']);
                         } else {
@@ -129,10 +114,11 @@ class ApiController extends Controller
                         } else {
                             $response->headers->add(['Content-type' => 'application/json']);
                         }
+                        $logger->info("mem " . memory_get_usage(true) .  " peak: " . memory_get_peak_usage(true));
                         return $response;
                     }
                 } else {
-                    $this->logger->info("Request " . var_export($requestId, true) .
+                    $logger->debug("Request " . var_export($requestId, true) .
                         " does not match sample $sampleId " . var_export($sample['request'], true));
                 }
             }

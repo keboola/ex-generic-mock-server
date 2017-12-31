@@ -1,0 +1,7 @@
+monolog:
+    handlers:
+        stream_handler:
+            type:  stream
+            level: info
+            path:  "php://stdout"
+            channels: ["!request"]

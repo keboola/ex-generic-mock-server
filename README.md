@@ -69,7 +69,7 @@ match for the response. It may send other headers which will be ignored. This me
 provided that they are differentiated by `.requestHeaders` file. 
 
 You may also create a `.responseHeaders` file which can contain the headers which will be sent with the response. If the file is not present
-a `Content-type: application/json` will be sent automatically. If the `.responseHeaders` file is not present, that header will not be sent.
+a `Content-type: application/json` will be sent automatically. If the `.responseHeaders` file is present, that header will not be sent.
 
 ### Full example
 Create a directory `my-api`. Create a file in that directory `search.request` with content:

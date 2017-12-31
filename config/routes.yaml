@@ -1,0 +1,5 @@
+mock-server:
+  path: /{items}
+  controller: App\Controller\ApiController::index
+  requirements:
+    items: ".*"

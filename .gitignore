@@ -16,3 +16,16 @@
 /web/bundles/
 /.idea
 /*.log
+
+
+###> symfony/framework-bundle ###
+.env
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+
+###> phpunit/phpunit ###
+/phpunit.xml
+###< phpunit/phpunit ###

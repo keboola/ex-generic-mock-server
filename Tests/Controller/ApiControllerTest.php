@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\AppBundle\Controller;
+namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -9,8 +9,7 @@ class ApiControllerTest extends WebTestCase
     public function testNormal()
     {
         $client = static::createClient();
-        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
-            DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
+        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
         putenv('KBC_EXAMPLES_DIR=' . $examplesDir);
         $client->request('GET', '/test-url');
         self::assertEquals(200, $client->getResponse()->getStatusCode());
@@ -26,7 +25,7 @@ class ApiControllerTest extends WebTestCase
     public function testInvalidDirectory()
     {
         $client = static::createClient();
-        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
+        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . 'data-invalid' . DIRECTORY_SEPARATOR;
         putenv('KBC_EXAMPLES_DIR=' . $examplesDir);
         $client->request('GET', '/test-url');
@@ -44,11 +43,10 @@ class ApiControllerTest extends WebTestCase
     public function testPostWithBody()
     {
         $client = static::createClient();
-        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
-            DIRECTORY_SEPARATOR . 'data-post' . DIRECTORY_SEPARATOR;
+        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data-post' . DIRECTORY_SEPARATOR;
         putenv('KBC_EXAMPLES_DIR=' . $examplesDir);
         $client->request('POST', '/test-post', [], [], [], json_encode(["thisIs" => "correct"]));
-        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertEquals(200, $client->getResponse()->getStatusCode(), (string)$client->getResponse()->getContent());
         self::assertEquals(['message' => 'ok'], json_decode($client->getResponse()->getContent(), true));
         $client->request('POST', '/test-post', [], [], [], json_encode(["thisIs" => "incorrect"]));
         self::assertEquals(200, $client->getResponse()->getStatusCode());
@@ -64,12 +62,12 @@ class ApiControllerTest extends WebTestCase
     public function testHeadersCatch()
     {
         $client = static::createClient();
-        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
+        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . 'data-headers-catch' . DIRECTORY_SEPARATOR;
         putenv('KBC_EXAMPLES_DIR=' . $examplesDir);
 
         $client->request('GET', '/test-headers-catch');
-        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertEquals(200, $client->getResponse()->getStatusCode(), (string)$client->getResponse()->getContent());
         self::assertEquals(['message' => 'error'], json_decode($client->getResponse()->getContent(), true));
 
         $client->request('GET', '/test-headers-catch', [], [], [
@@ -90,12 +88,12 @@ class ApiControllerTest extends WebTestCase
     public function testHeadersNoCatch()
     {
         $client = static::createClient();
-        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
+        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . 'data-headers-no-catch' . DIRECTORY_SEPARATOR;
         putenv('KBC_EXAMPLES_DIR=' . $examplesDir);
 
         $client->request('GET', '/test-headers-no-catch');
-        self::assertEquals(404, $client->getResponse()->getStatusCode());
+        self::assertEquals(404, $client->getResponse()->getStatusCode(), (string)$client->getResponse()->getContent());
         self::assertEquals(
             ['message' => "Unknown request GET /test-headers-no-catch"],
             json_decode($client->getResponse()->getContent(), true)
@@ -121,12 +119,11 @@ class ApiControllerTest extends WebTestCase
     public function testCode()
     {
         $client = static::createClient();
-        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
-            DIRECTORY_SEPARATOR . 'data-code' . DIRECTORY_SEPARATOR;
+        $examplesDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data-code' . DIRECTORY_SEPARATOR;
         putenv('KBC_EXAMPLES_DIR=' . $examplesDir);
 
         $client->request('GET', '/test-code');
-        self::assertEquals(202, $client->getResponse()->getStatusCode());
+        self::assertEquals(202, $client->getResponse()->getStatusCode(), (string)$client->getResponse()->getContent());
         self::assertEquals(['message' => 'ok'], json_decode($client->getResponse()->getContent(), true));
     }
 }

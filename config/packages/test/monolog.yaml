@@ -1,0 +1,7 @@
+monolog:
+    handlers:
+        debug_log:
+            type:  stream
+            level: debug
+            path:  "php://stdout"
+            channels: ["!event"]
