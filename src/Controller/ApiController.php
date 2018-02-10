@@ -79,7 +79,7 @@ class ApiController extends Controller
             $requestId = trim($request->getMethod() . ' ' . $uri . "\r\n\r\n" . $request->getContent());
             $headers = $request->headers->all();
             $samples = $this->loadData();
-            $logger->info("Loaded " . count($samples) . "samples.");
+            $logger->debug("Loaded " . count($samples) . "samples.");
             foreach ($samples as $sampleId => $sample) {
                 if ($sample['request'] == $requestId) {
                     $valid = true;
@@ -114,7 +114,7 @@ class ApiController extends Controller
                         } else {
                             $response->headers->add(['Content-type' => 'application/json']);
                         }
-                        $logger->info("mem " . memory_get_usage(true) .  " peak: " . memory_get_peak_usage(true));
+                        $logger->debug("mem " . memory_get_usage(true) .  " peak: " . memory_get_peak_usage(true));
                         return $response;
                     }
                 } else {
