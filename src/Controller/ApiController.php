@@ -17,7 +17,7 @@ class ApiController extends Controller
         if (getenv('KBC_EXAMPLES_DIR')) {
             $directory = getenv('KBC_EXAMPLES_DIR');
         } else {
-            $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
+            $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' .
                 DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data';
         }
         return $directory;
