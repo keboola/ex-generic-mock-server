@@ -4,13 +4,13 @@ namespace App\Controller;
 
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ApiController extends Controller
+class ApiController extends AbstractController
 {
     private function getBaseDirectory()
     {
