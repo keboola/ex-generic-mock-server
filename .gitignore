@@ -30,3 +30,4 @@
 /phpunit.xml
 ###< phpunit/phpunit ###
 /.phpunit.result.cache
+/.env
