@@ -71,7 +71,8 @@ class ApiControllerTest extends WebTestCase
         self::assertEquals(['message' => 'error'], json_decode($client->getResponse()->getContent(), true));
 
         $client->request('GET', '/test-headers-catch', [], [], [
-            'HTTP_Content-type' => 'application/json'
+            'HTTP_Content-type' => 'application/json',
+            'HTTP_Authorization' => 'randomString13579'
         ]);
         self::assertEquals(200, $client->getResponse()->getStatusCode());
         self::assertEquals(['message' => 'ok'], json_decode($client->getResponse()->getContent(), true));

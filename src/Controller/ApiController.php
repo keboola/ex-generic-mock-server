@@ -89,7 +89,7 @@ class ApiController extends AbstractController
                             continue;
                         }
                         $value = trim(substr($header, strpos($header, ':') + 1));
-                        if (!isset($headers[$name]) || $headers[$name][0] != $value) {
+                        if (!isset($headers[$name]) || ($headers[$name][0] != $value && $value != '*')) {
                             $logger->info("Request headers " . var_export($headers, true) .
                                 " do not match sample $sampleId headers " .
                                 var_export($sample['requestHeaders'], true));
