@@ -1,0 +1,39 @@
+name: GitHub Actions
+on: [ push ]
+concurrency: ci-${{ github.ref }}
+env:
+  # Quay login
+  QUAY_USERNAME: "keboola+gha_ex_generic_mock_server"
+  QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Build image
+        run: docker-compose build ex-generic-mock-server
+
+  tests:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Run tests
+        run: |
+          docker-compose run --rm ex-generic-mock-server /code/vendor/bin/phpcs --standard=psr2 -n /code/src/
+          docker-compose run --rm ex-generic-mock-server /code/vendor/bin/phpcs --standard=psr2 -n /code/Tests/
+          docker-compose run --rm ex-generic-mock-server /code/vendor/bin/phpunit
+
+  deploy:
+    needs:
+      - build
+      - tests
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Deploy to Quay
+        run: |
+          ./deploy.sh
