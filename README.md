@@ -106,3 +106,7 @@ Now you can run HTTP requests against `localhost:8888`. If you send a GET reques
 `Accept: application/json` header, you will obtain the reponse `{"search": "yes!"}`. If you send a GET request to 
 `/my-api/search?foo=bar` without that header, you will obtain the response `{"search": "no"}`. All other request to 
 `localhost:8888` will result in an error.
+
+## License
+
+MIT licensed, see [LICENSE](./LICENSE) file.
